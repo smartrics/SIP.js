@@ -896,6 +896,7 @@ UA.prototype.loadConfig = function(configuration) {
       hackIpInContact: false,
       hackWssInTransport: false,
       hackAllowUnregisteredOptionTags: false,
+      hackContactUser: false,
 
       contactTransport: 'ws',
       forceRport: false,
@@ -1041,10 +1042,21 @@ UA.prototype.loadConfig = function(configuration) {
     settings.contactTransport = 'wss';
   }
 
+  // allows to specify a username for the contact header instead of a random value
+  var contactUser = SIP.Utils.createRandomToken(8);
+  if (settings.hackContactUser) {
+    if (typeof settings.hackContactUser === 'boolean') {
+      contactUser = settings.authorizationUser;
+    }
+    else if (typeof settings.hackContactUser === 'string') {
+      contactUser = settings.hackContactUser;
+    }
+  }
+
   this.contact = {
     pub_gruu: null,
     temp_gruu: null,
-    uri: new SIP.URI('sip', SIP.Utils.createRandomToken(8), settings.viaHost, null, {transport: settings.contactTransport}),
+    uri: new SIP.URI('sip', contactUser, settings.viaHost, null, {transport: settings.contactTransport}),
     toString: function(options){
       options = options || {};
 
@@ -1128,6 +1140,7 @@ UA.configuration_skeleton = (function() {
       "hackIpInContact", //false
       "hackWssInTransport", //false
       "hackAllowUnregisteredOptionTags", //false
+      "hackContactUser", // false
       "contactTransport", // 'ws'
       "forceRport", // false
       "iceCheckingTimeout",
@@ -1310,6 +1323,14 @@ UA.configuration_check = {
       }
     },
 
+    hackContactUser: function(hackContactUser) {
+      if (typeof hackContactUser === 'boolean') {
+        return hackContactUser;
+      } else if (typeof hackContactUser === 'string') {
+        return hackContactUser;
+      }
+    },
+    
     iceCheckingTimeout: function(iceCheckingTimeout) {
       if(SIP.Utils.isDecimal(iceCheckingTimeout)) {
         return Math.max(500, iceCheckingTimeout);
