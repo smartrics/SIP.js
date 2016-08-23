@@ -897,6 +897,7 @@ UA.prototype.loadConfig = function(configuration) {
       hackWssInTransport: false,
       hackAllowUnregisteredOptionTags: false,
       hackContactUser: false,
+      extraContactOptions: {},
 
       contactTransport: 'ws',
       forceRport: false,
@@ -1044,6 +1045,7 @@ UA.prototype.loadConfig = function(configuration) {
 
   // allows to specify a username for the contact header instead of a random value
   var contactUser = SIP.Utils.createRandomToken(8);
+
   if (settings.hackContactUser) {
     if (typeof settings.hackContactUser === 'boolean') {
       contactUser = settings.authorizationUser;
@@ -1053,10 +1055,27 @@ UA.prototype.loadConfig = function(configuration) {
     }
   }
 
+  var extraContactOptions = settings.extraContactOptions || {};
+  var uriOptions = {transport: settings.contactTransport};
+
+  if (typeof extraContactOptions === 'object') {
+    var fields = Object.keys(extraContactOptions);
+    fields.forEach(function(field) {
+      uriOptions[field] = extraContactOptions[field];
+    });
+  }
+
+  var csvUriOptions = '';
+  fields = Object.keys(extraContactOptions);
+  fields.forEach(function(field) {
+    csvUriOptions = ';' + field + '=' + extraContactOptions[field] + csvUriOptions;
+  });
+
+
   this.contact = {
     pub_gruu: null,
     temp_gruu: null,
-    uri: new SIP.URI('sip', contactUser, settings.viaHost, null, {transport: settings.contactTransport}),
+    uri: new SIP.URI('sip', contactUser, settings.viaHost, null, uriOptions),
     toString: function(options){
       options = options || {};
 
@@ -1066,7 +1085,7 @@ UA.prototype.loadConfig = function(configuration) {
         contact = '<';
 
       if (anonymous) {
-        contact += (this.temp_gruu || ('sip:anonymous@anonymous.invalid;transport='+settings.contactTransport)).toString();
+        contact += (this.temp_gruu || ('sip:anonymous@anonymous.invalid'+ csvUriOptions)).toString();
       } else {
         contact += (this.pub_gruu || this.uri).toString();
       }
@@ -1141,6 +1160,7 @@ UA.configuration_skeleton = (function() {
       "hackWssInTransport", //false
       "hackAllowUnregisteredOptionTags", //false
       "hackContactUser", // false
+      "extraContactOptions", // {}
       "contactTransport", // 'ws'
       "forceRport", // false
       "iceCheckingTimeout",
@@ -1330,7 +1350,13 @@ UA.configuration_check = {
         return hackContactUser;
       }
     },
-    
+
+    extraContactOptions: function(extraContactOptions) {
+      if (typeof extraContactOptions === 'object') {
+        return extraContactOptions;
+      }
+    },
+
     iceCheckingTimeout: function(iceCheckingTimeout) {
       if(SIP.Utils.isDecimal(iceCheckingTimeout)) {
         return Math.max(500, iceCheckingTimeout);
