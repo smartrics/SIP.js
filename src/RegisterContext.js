@@ -10,13 +10,22 @@ RegisterContext = function (ua) {
   this.registrar = ua.configuration.registrarServer;
   this.expires = ua.configuration.registerExpires;
 
-
   // Contact header
   this.contact = ua.contact.toString();
 
   if(regId) {
     this.contact += ';reg-id='+ regId;
     this.contact += ';+sip.instance="<urn:uuid:'+ ua.configuration.instanceId+'>"';
+  }
+
+  var extraContactHeaderOptions = ua.configuration.extraContactHeaderRegisterOptions || {};
+  var csvContactHeaderOptions = '';
+  var fields = Object.keys(extraContactHeaderOptions);
+  fields.forEach(function(field) {
+    csvContactHeaderOptions = ';' + field + '=' + extraContactHeaderOptions[field] + csvContactHeaderOptions;
+  });
+  if(csvContactHeaderOptions.length > 0) {
+    this.contact += csvContactHeaderOptions;
   }
 
   // Call-ID and CSeq values RFC3261 10.2

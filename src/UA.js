@@ -897,6 +897,7 @@ UA.prototype.loadConfig = function(configuration) {
       hackWssInTransport: false,
       hackAllowUnregisteredOptionTags: false,
       hackContactUser: false,
+      extraContactHeaderRegisterOptions: {},
       extraContactUriOptions: {},
 
       contactTransport: 'ws',
@@ -1055,27 +1056,28 @@ UA.prototype.loadConfig = function(configuration) {
     }
   }
 
+  var fields;
   var extraContactUriOptions = settings.extraContactUriOptions || {};
-  var uriOptions = {transport: settings.contactTransport};
+  var contactUriOptions = {transport: settings.contactTransport};
 
   if (typeof extraContactUriOptions === 'object') {
-    var fields = Object.keys(extraContactUriOptions);
+    fields = Object.keys(extraContactUriOptions);
     fields.forEach(function(field) {
-      uriOptions[field] = extraContactUriOptions[field];
+      contactUriOptions[field] = extraContactUriOptions[field];
     });
   }
 
-  var csvUriOptions = '';
+  var csvContactUriOptions = '';
   fields = Object.keys(extraContactUriOptions);
   fields.forEach(function(field) {
-    csvUriOptions = ';' + field + '=' + extraContactUriOptions[field] + csvUriOptions;
+    csvContactUriOptions = ';' + field + '=' + extraContactUriOptions[field] + csvContactUriOptions;
   });
 
 
   this.contact = {
     pub_gruu: null,
     temp_gruu: null,
-    uri: new SIP.URI('sip', contactUser, settings.viaHost, null, uriOptions),
+    uri: new SIP.URI('sip', contactUser, settings.viaHost, null, contactUriOptions),
     toString: function(options){
       options = options || {};
 
@@ -1085,7 +1087,7 @@ UA.prototype.loadConfig = function(configuration) {
         contact = '<';
 
       if (anonymous) {
-        contact += (this.temp_gruu || ('sip:anonymous@anonymous.invalid'+ csvUriOptions)).toString();
+        contact += (this.temp_gruu || ('sip:anonymous@anonymous.invalid'+ csvContactUriOptions)).toString();
       } else {
         contact += (this.pub_gruu || this.uri).toString();
       }
@@ -1161,6 +1163,7 @@ UA.configuration_skeleton = (function() {
       "hackAllowUnregisteredOptionTags", //false
       "hackContactUser", // false
       "extraContactUriOptions", // {}
+      "extraContactHeaderRegisterOptions", // {}
       "contactTransport", // 'ws'
       "forceRport", // false
       "iceCheckingTimeout",
@@ -1354,6 +1357,12 @@ UA.configuration_check = {
     extraContactUriOptions: function(extraContactUriOptions) {
       if (typeof extraContactUriOptions === 'object') {
         return extraContactUriOptions;
+      }
+    },
+
+    extraContactHeaderRegisterOptions: function(extraContactHeaderRegisterOptions) {
+      if (typeof extraContactHeaderRegisterOptions === 'object') {
+        return extraContactHeaderRegisterOptions;
       }
     },
 
