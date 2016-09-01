@@ -897,7 +897,7 @@ UA.prototype.loadConfig = function(configuration) {
       hackWssInTransport: false,
       hackAllowUnregisteredOptionTags: false,
       hackContactUser: false,
-      extraContactOptions: {},
+      extraContactUriOptions: {},
 
       contactTransport: 'ws',
       forceRport: false,
@@ -1055,20 +1055,20 @@ UA.prototype.loadConfig = function(configuration) {
     }
   }
 
-  var extraContactOptions = settings.extraContactOptions || {};
+  var extraContactUriOptions = settings.extraContactUriOptions || {};
   var uriOptions = {transport: settings.contactTransport};
 
-  if (typeof extraContactOptions === 'object') {
-    var fields = Object.keys(extraContactOptions);
+  if (typeof extraContactUriOptions === 'object') {
+    var fields = Object.keys(extraContactUriOptions);
     fields.forEach(function(field) {
-      uriOptions[field] = extraContactOptions[field];
+      uriOptions[field] = extraContactUriOptions[field];
     });
   }
 
   var csvUriOptions = '';
-  fields = Object.keys(extraContactOptions);
+  fields = Object.keys(extraContactUriOptions);
   fields.forEach(function(field) {
-    csvUriOptions = ';' + field + '=' + extraContactOptions[field] + csvUriOptions;
+    csvUriOptions = ';' + field + '=' + extraContactUriOptions[field] + csvUriOptions;
   });
 
 
@@ -1160,7 +1160,7 @@ UA.configuration_skeleton = (function() {
       "hackWssInTransport", //false
       "hackAllowUnregisteredOptionTags", //false
       "hackContactUser", // false
-      "extraContactOptions", // {}
+      "extraContactUriOptions", // {}
       "contactTransport", // 'ws'
       "forceRport", // false
       "iceCheckingTimeout",
@@ -1351,9 +1351,9 @@ UA.configuration_check = {
       }
     },
 
-    extraContactOptions: function(extraContactOptions) {
-      if (typeof extraContactOptions === 'object') {
-        return extraContactOptions;
+    extraContactUriOptions: function(extraContactUriOptions) {
+      if (typeof extraContactUriOptions === 'object') {
+        return extraContactUriOptions;
       }
     },
 
