@@ -897,7 +897,7 @@ UA.prototype.loadConfig = function(configuration) {
       hackWssInTransport: false,
       hackAllowUnregisteredOptionTags: false,
       hackContactUser: false,
-      extraContactHeaderRegisterOptions: {},
+      extraContactHeaderOptions: {},
       extraContactUriOptions: {},
 
       contactTransport: 'ws',
@@ -1059,6 +1059,7 @@ UA.prototype.loadConfig = function(configuration) {
   var fields;
   var extraContactUriOptions = settings.extraContactUriOptions || {};
   var contactUriOptions = {transport: settings.contactTransport};
+  var contactHeaderOptions = settings.extraContactHeaderOptions || {};
 
   if (typeof extraContactUriOptions === 'object') {
     fields = Object.keys(extraContactUriOptions);
@@ -1073,6 +1074,11 @@ UA.prototype.loadConfig = function(configuration) {
     csvContactUriOptions = ';' + field + '=' + extraContactUriOptions[field] + csvContactUriOptions;
   });
 
+  var csvContactHeaderOptions = '';
+  fields = Object.keys(contactHeaderOptions);
+  fields.forEach(function(field) {
+    csvContactHeaderOptions = ';' + field + '=' + contactHeaderOptions[field] + csvContactHeaderOptions;
+  });
 
   this.contact = {
     pub_gruu: null,
@@ -1096,7 +1102,7 @@ UA.prototype.loadConfig = function(configuration) {
         contact += ';ob';
       }
 
-      contact += '>';
+      contact += '>' + csvContactHeaderOptions;
 
       return contact;
     }
@@ -1163,7 +1169,7 @@ UA.configuration_skeleton = (function() {
       "hackAllowUnregisteredOptionTags", //false
       "hackContactUser", // false
       "extraContactUriOptions", // {}
-      "extraContactHeaderRegisterOptions", // {}
+      "extraContactHeaderOptions", // {}
       "contactTransport", // 'ws'
       "forceRport", // false
       "iceCheckingTimeout",
@@ -1360,9 +1366,9 @@ UA.configuration_check = {
       }
     },
 
-    extraContactHeaderRegisterOptions: function(extraContactHeaderRegisterOptions) {
-      if (typeof extraContactHeaderRegisterOptions === 'object') {
-        return extraContactHeaderRegisterOptions;
+    extraContactHeaderOptions: function(extraContactHeaderOptions) {
+      if (typeof extraContactHeaderOptions === 'object') {
+        return extraContactHeaderOptions;
       }
     },
 

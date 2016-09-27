@@ -18,7 +18,7 @@ RegisterContext = function (ua) {
     this.contact += ';+sip.instance="<urn:uuid:'+ ua.configuration.instanceId+'>"';
   }
 
-  var extraContactHeaderOptions = ua.configuration.extraContactHeaderRegisterOptions || {};
+  var extraContactHeaderOptions = ua.configuration.extraContactHeaderOptions || {};
   var csvContactHeaderOptions = '';
   var fields = Object.keys(extraContactHeaderOptions);
   fields.forEach(function(field) {
