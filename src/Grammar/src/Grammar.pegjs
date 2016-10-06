@@ -794,7 +794,7 @@ to_param   = tag_param / generic_param
 
 // VIA
 
-Via               = via_parm (COMMA via_parm)*
+Via               = via_parm COMMA? .*
 
 via_parm          = sent_protocol LWS sent_by ( SEMI via_params )*
 
