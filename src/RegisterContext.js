@@ -15,7 +15,6 @@ RegisterContext = function (ua) {
 
   if(regId) {
     this.contact += ';reg-id='+ regId;
-    this.contact += ';+sip.instance="<urn:uuid:'+ ua.configuration.instanceId+'>"';
   }
 
   var extraContactHeaderOptions = ua.configuration.extraContactHeaderOptions || {};
