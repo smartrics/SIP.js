@@ -1103,6 +1103,7 @@ UA.prototype.loadConfig = function(configuration) {
       }
 
       contact += '>' + csvContactHeaderOptions;
+      contact += ';+sip.instance="<urn:uuid:'+ settings.instanceId+'>"';
 
       return contact;
     }
